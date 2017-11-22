@@ -8,16 +8,16 @@ using System.Threading.Tasks;
 
 namespace Project.Repository.Common
 {
-    public interface IRepository<T> where T: BaseEntity
+    public interface IRepository<T, in Key> where T: class
     {
         IEnumerable<T> GetAll();
 
-        T GetById(object id);
+        T GetById(Key id);
 
         void Insert(T model);
 
         void Update(T model);
 
-        void Delete(T id);
+        void Delete(T model);
     }
 }

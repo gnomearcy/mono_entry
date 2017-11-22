@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Project.Models.Common;
 using Project.DAL;
+using System.Data.Entity;
 
 namespace Project.Repository
 {
@@ -18,26 +19,18 @@ namespace Project.Repository
             this.Context = Context;
         }
 
-        //public void Delete(object id)
-        //{
-        //    var result = Context.Make.Find(id);
-        //    Context.Make.Remove(result);
-        //    Context.SaveChanges();
-        //}
-
-        void IRepository<VehicleMakeEntity>.Delete(VehicleMakeEntity model)
+        public void Delete(VehicleMakeEntity model)
         {
             Context.Make.Remove(model);
-            Context.SaveChanges();
         }
         public IEnumerable<VehicleMakeEntity> GetAll()
         {
-            return Context.Make;
+            return Context.Make.ToList();
         }
 
-        public VehicleMakeEntity GetById(object id)
+        public VehicleMakeEntity GetById(Guid id)
         {
-            return Context.Make.Find(id);
+            return Context.Make.FirstOrDefault( x=> x.Id == id);
         }
 
         public void Insert(VehicleMakeEntity model)
@@ -47,21 +40,15 @@ namespace Project.Repository
             {
                 // Save the record only if it doesn't exist
                 Context.Make.Add(model);
-                Context.SaveChanges();
             }
         }
 
         public void Update(VehicleMakeEntity model)
         {
-            var result = Context.Make.SingleOrDefault(b => b.Id == model.Id);
-            if(result != null)
-            {
-                result.Name = model.Name;
-                result.Abrv = model.Abrv;
-                Context.SaveChanges();
-            }
+            // Source:
+            // https://stackoverflow.com/a/15339512/3744259
+            Context.Make.Attach(model);
+            Context.Entry(model).State = EntityState.Modified;
         }
-
-       
     }
 }

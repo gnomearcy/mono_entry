@@ -8,14 +8,8 @@ using System.Threading.Tasks;
 
 namespace Project.Repository.Common
 {
-    public interface IVehicleModelRepository : IRepository<VehicleModelEntity>
+    public interface IVehicleModelRepository : IRepository<VehicleModelEntity, Guid>
     {
-        //List<IVehicleModel> Get();
 
-        //void Delete(IVehicleModel model);
-
-        //void Delete(IVehicleMake model);
-
-        //void Update(IVehicleMake model);
     }
 }

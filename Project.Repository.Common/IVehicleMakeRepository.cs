@@ -8,14 +8,8 @@ using Project.DAL;
 
 namespace Project.Repository.Common
 {
-    public interface IVehicleMakeRepository : IRepository<VehicleMakeEntity>
+    public interface IVehicleMakeRepository : IRepository<VehicleMakeEntity, Guid>
     {
-        //List<IVehicleMake> Get();
 
-        //void Create(IVehicleMake vehicleMake);
-
-        ////void Delete(IVehicleMake vehicleMake);
-
-        ////void Update(IVehicleMake vehicleMake);
     }
 }

@@ -6,34 +6,49 @@ using System.Text;
 using System.Threading.Tasks;
 using Project.Models.Common;
 using Project.DAL;
+using System.Data.Entity;
 
 namespace Project.Repository
 {
     public class VehicleModelRepository : IVehicleModelRepository
     {
-        public void Delete(VehicleModelEntity id)
+        private VehicleDbContext Context;
+
+        public VehicleModelRepository(VehicleDbContext context)
         {
-            throw new NotImplementedException();
+            this.Context = context;
+        }
+
+        public void Delete(VehicleModelEntity model)
+        {
+            Context.Model.Remove(model);
         }
 
         public IEnumerable<VehicleModelEntity> GetAll()
         {
-            throw new NotImplementedException();
+            return Context.Model.ToList();
         }
 
-        public VehicleModelEntity GetById(object id)
+        public VehicleModelEntity GetById(Guid id)
         {
-            throw new NotImplementedException();
+            return Context.Model.FirstOrDefault(t => t.Id == id);
         }
 
         public void Insert(VehicleModelEntity model)
         {
-            throw new NotImplementedException();
+            var result = Context.Model.FirstOrDefault(t => t.Id == model.Id);
+            if(result == null)
+            {
+                Context.Model.Add(model);
+            }
         }
 
         public void Update(VehicleModelEntity model)
         {
-            throw new NotImplementedException();
+            // Source:
+            // https://stackoverflow.com/a/15339512/3744259
+            Context.Model.Attach(model);
+            Context.Entry(model).State = EntityState.Modified;
         }
     }
 }
