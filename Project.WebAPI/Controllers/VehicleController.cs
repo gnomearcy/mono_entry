@@ -10,6 +10,7 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using Project.Repository;
+using System.Threading.Tasks;
 
 namespace Project.WebAPI.Controllers
 {
@@ -26,12 +27,11 @@ namespace Project.WebAPI.Controllers
         public VehicleController()
         {
             // Manually create a Service for usage in API methods
-            this.Service = new VehicleService(new VehicleMakeRepository(new VehicleDbContext()), new VehicleModelRepository());
+            var c = new VehicleDbContext();
+            this.Service = new VehicleService(new VehicleMakeRepository(c), new VehicleModelRepository(c), new UnitOfWork(c));
         }
 
         #endregion
-
-
         [HttpGet]
         [Route("models")]
         public IEnumerable<IVehicleModel> getModels()
@@ -62,11 +62,11 @@ namespace Project.WebAPI.Controllers
         #region VehicleMake CRUD
         [HttpPost]
         [Route("create/make")]
-        public HttpResponseMessage CreateMake([FromBody] IVehicleMake model)
+        public async Task<HttpResponseMessage> CreateMake([FromBody] IVehicleMake model)
         {
             try
             {
-                var result = Service.CreateUpdateMake(model);
+                var result = await Service.CreateUpdateMake(model);
                 if(result == null)
                 {
                     // Something bad happened down the service chain.
@@ -103,7 +103,7 @@ namespace Project.WebAPI.Controllers
 
         [HttpPost]
         [Route("delete/make")]
-        public HttpResponseMessage deleteMake(Guid id)
+        public HttpResponseMessage DeleteMake(Guid id)
         {
             try
             {
@@ -113,6 +113,21 @@ namespace Project.WebAPI.Controllers
             catch (Exception unused)
             {
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Error has occurred while creating a VehicleMake");
+            }
+        }
+
+        [HttpPost]
+        [Route("delete/make_and_models")]
+        public async Task<HttpResponseMessage> DeleteMakeAndRelatedModels(Guid makeId)
+        {
+            try
+            {
+                await Service.DeleteModelsByMake(makeId);
+                return Request.CreateResponse(HttpStatusCode.OK);
+            }
+            catch(Exception e)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Error occurred while deleting all models by make id");
             }
         }
 

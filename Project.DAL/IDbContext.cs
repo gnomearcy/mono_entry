@@ -9,7 +9,7 @@ namespace Project.DAL
 {
     public interface IDbContext
     {
-        IDbSet<T> Set<T>() where T : BaseEntity;
+        IDbSet<T> Set<T>() where T : class;
 
         int SaveChanges();
     }

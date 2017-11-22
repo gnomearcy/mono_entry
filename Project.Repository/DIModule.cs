@@ -14,6 +14,7 @@ namespace Project.Repository
         {
             Bind<IVehicleMakeRepository>().To<VehicleMakeRepository>();
             Bind<IVehicleModelRepository>().To<VehicleModelRepository>();
+            Bind<IUnitOfWork>().To<UnitOfWork>();
         }
     }
 }

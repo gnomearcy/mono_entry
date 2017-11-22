@@ -40,6 +40,7 @@ namespace Project.Repository
             if(result == null)
             {
                 Context.Model.Add(model);
+                Context.SaveChanges();
             }
         }
 
@@ -49,6 +50,7 @@ namespace Project.Repository
             // https://stackoverflow.com/a/15339512/3744259
             Context.Model.Attach(model);
             Context.Entry(model).State = EntityState.Modified;
+            Context.SaveChanges();
         }
     }
 }

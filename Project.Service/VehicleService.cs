@@ -13,16 +13,18 @@ namespace Project.Service
 {
     public class VehicleService : IVehicleService
     {
-        private IRepository<VehicleMakeEntity> vehicleMakeRepository;
-        private IRepository<VehicleModelEntity> vehicleModelRepository;
+        private IVehicleMakeRepository vehicleMakeRepository;
+        private IVehicleModelRepository vehicleModelRepository;
+        private IUnitOfWork unitOfWork;
         
-        public VehicleService(IRepository<VehicleMakeEntity> makeRepository, IRepository<VehicleModelEntity> modelRepository)
+        public VehicleService(IVehicleMakeRepository makeRepository, IVehicleModelRepository modelRepository, IUnitOfWork unitOfWork)
         {
             this.vehicleMakeRepository = makeRepository;
             this.vehicleModelRepository = modelRepository;
+            this.unitOfWork = unitOfWork;
         }
 
-        public IVehicleMake CreateUpdateMake(IVehicleMake make)
+        public Task<IVehicleMake> CreateUpdateMake(IVehicleMake make)
         {
             if(make == null)
             {
@@ -38,20 +40,16 @@ namespace Project.Service
             var result = vehicleMakeRepository.GetById(mapped.Id);
             if(result == null)
             {
-                // Insert it
                 vehicleMakeRepository.Insert(mapped);
             }
             else
             {
                 vehicleMakeRepository.Update(mapped);
             }
-            return make;
+            return Task.FromResult(make);
         }
 
-        public IVehicleModel CreateUpdateModel(IVehicleModel model)
-        {
-            throw new NotImplementedException();
-        }
+       
 
         public void DeleteMake(Guid id)
         {
@@ -85,10 +83,51 @@ namespace Project.Service
             return mapped;
         }
 
+        #region Model CRUD
+        public IVehicleModel CreateUpdateModel(IVehicleModel model)
+        {
+            throw new NotImplementedException();
+        }
+
         public IEnumerable<IVehicleModel> GetAllModels()
         {
             throw new NotImplementedException();
 
         }
+
+        /// <summary>
+        /// Displaying example of UnitOfWork pattern.
+        /// </summary>
+        /// <param name="makeId"></param>
+        /// <returns></returns>
+        public async Task<int> DeleteModelsByMake(Guid makeId)
+        {
+            // Delete original make object
+            var result = await unitOfWork.DeleteAsync<VehicleMakeEntity>(makeId);
+            if(result == 0) // 0 == failure, doesn't exist
+            {
+                // Nothing was deleted, return success to the caller
+                return await Task.FromResult(0);
+            }
+            var models = vehicleModelRepository.GetAll();
+            if(models == null)
+            {
+                // There are no models to delete for given MakeId
+                return await Task.FromResult(0);
+            }
+
+            foreach(var model in models)
+            {
+                if(model.MakeId == makeId)
+                {
+                    await unitOfWork.DeleteAsync<VehicleModelEntity>(model);
+                }
+            }
+
+            await unitOfWork.CommitAsync();
+            return await Task.FromResult(0);
+        }
+
+        #endregion
     }
 }

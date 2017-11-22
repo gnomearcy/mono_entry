@@ -43,7 +43,7 @@ namespace Project.DAL
             base.OnModelCreating(builder);
         }
 
-        public new IDbSet<T> Set<T>() where T: BaseEntity
+        public new IDbSet<T> Set<T>() where T: class
         {
             return base.Set<T>();
         }

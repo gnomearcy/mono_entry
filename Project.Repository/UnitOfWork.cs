@@ -11,107 +11,80 @@ using Project.DAL;
 
 namespace Project.Repository
 {
-    public class UnitOfWork
+    public class UnitOfWork : IUnitOfWork
     {
-        //protected VehicleDbContext  DbContext{ get; private set; }
+        protected VehicleDbContext Context;
 
-        //public UnitOfWork(VehicleDbContext dbContext)
-        //{
-        //    if (dbContext == null)
-        //    {
-        //        throw new ArgumentNullException("DbContext");
-        //    }
-        //    DbContext = dbContext;
-        //}
+        public UnitOfWork(VehicleDbContext c)
+        {
+            this.Context = c;
+        }
 
-        //public virtual Task<int> AddAsync<T>(T entity) where T : class
-        //{
-        //    try
-        //    {
-        //        DbEntityEntry dbEntityEntry = DbContext.Entry(entity);
-        //        if (dbEntityEntry.State != EntityState.Detached)
-        //        {
-        //            dbEntityEntry.State = EntityState.Added;
-        //        }
-        //        else
-        //        {
-        //            DbContext.Set<T>().Add(entity);
-        //        }
-        //        return Task.FromResult(1);
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        throw e;
-        //    }
+        public Task<int> AddAsync<T>(T entity) where T : class
+        {
+            DbEntityEntry<T> dbEntityEntry = Context.Entry(entity);
+            if (dbEntityEntry.State != EntityState.Detached)
+            {
+                dbEntityEntry.State = EntityState.Added;
+            }
+            else
+            {
+                Context.Set<T>().Add(entity);
+            }
+            return Task.FromResult(1);
+        }
 
-        //}
+        public async Task<int> CommitAsync()
+        {
+            int result = 0;
+            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                result = await Context.SaveChangesAsync();
+                scope.Complete();
+            }
+            return result;
+        }
 
-        //public virtual Task<int> UpdateAsync<T>(T entity) where T : class
-        //{
-        //    try
-        //    {
-        //        DbEntityEntry dbEntityEntry = DbContext.Entry(entity);
-        //        if (dbEntityEntry.State == EntityState.Detached)
-        //        {
-        //            DbContext.Set<T>().Attach(entity);
-        //        }
-        //        dbEntityEntry.State = EntityState.Modified;
-        //        return Task.FromResult(1);
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        throw e;
-        //    }
+        public Task<int> DeleteAsync<T>(T entity) where T : class
+        {
+            DbEntityEntry dbEntityEntry = Context.Entry(entity);
+            if (dbEntityEntry.State != EntityState.Deleted)
+            {
+                dbEntityEntry.State = EntityState.Deleted;
+            }
+            else
+            {
+                Context.Set<T>().Attach(entity);
+                Context.Set<T>().Remove(entity);
+            }
+            return Task.FromResult(1);
+        }
 
-        //}
+        public Task<int> DeleteAsync<T>(Guid id) where T : class
+        {
+            var entity = Context.Set<T>().Find(id);
+            if (entity == null)
+            {
+                return Task.FromResult(0);
+            }
+            return DeleteAsync<T>(entity);
+        }
 
-        //public virtual Task<int> DeleteAsync<T>(T entity) where T : class
-        //{
-        //    try
-        //    {
-        //        DbEntityEntry dbEntityEntry = DbContext.Entry(entity);
-        //        if (dbEntityEntry.State != EntityState.Deleted)
-        //        {
-        //            dbEntityEntry.State = EntityState.Deleted;
-        //        }
-        //        else
-        //        {
-        //            DbContext.Set<T>().Attach(entity);
-        //            DbContext.Set<T>().Remove(entity);
-        //        }
-        //        return Task.FromResult(1);
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        throw e;
-        //    }
+        public void Dispose()
+        {
+            Context.Dispose();
+        }
 
-        //}
+        public Task<int> UpdateAsync<T>(T entity) where T : class
+        {
+            DbEntityEntry dbEntityEntry = Context.Entry(entity);
+            if (dbEntityEntry.State == EntityState.Detached)
+            {
+                Context.Set<T>().Attach(entity);
+            }
+            dbEntityEntry.State = EntityState.Modified;
 
-        //public virtual Task<int> DeleteAsync<T>(Guid id) where T : class
-        //{
-        //    var entity = DbContext.Set<T>().Find(id);
-        //    if (entity == null)
-        //    {
-        //        return null;
-        //    }
-        //    return DeleteAsync<T>(entity);
-        //}
-
-        //public async Task<int> CommitAsync()
-        //{
-        //    int result = 0;
-        //    using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
-        //    {
-        //        result = await DbContext.SaveChangesAsync();
-        //        scope.Complete();
-        //    }
-        //    return result;
-        //}
-
-        //public void Dispose()
-        //{
-        //    DbContext.Dispose();
-        //}
+            return Task.FromResult(1);
+        }
     }
 }

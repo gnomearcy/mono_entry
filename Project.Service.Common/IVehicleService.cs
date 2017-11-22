@@ -42,8 +42,15 @@ namespace Project.Service.Common
         /// </summary>
         /// <param name="make">Model to create or update</param>
         /// <returns>The newly created model, updated model or null if there was an error.</returns>
-        IVehicleMake CreateUpdateMake(IVehicleMake make);
+        Task<IVehicleMake> CreateUpdateMake(IVehicleMake make);
 
         void DeleteMake(Guid id);
+
+        /// <summary>
+        /// Deletes all models that have the MakeId equal to passed Id.
+        /// Also deletes the Make object from database.
+        /// </summary>
+        /// <param name="makeId"></param>
+        Task<int> DeleteModelsByMake(Guid makeId);
     }
 }
