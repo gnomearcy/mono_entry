@@ -17,8 +17,8 @@ namespace Project.WebAPI.App_Start.AutoMapper
             CreateMap<VehicleModelEntity, IVehicleModel>();
 
             // For future reference
-            //CreateMap<IVehicleMake, IVehicleMakeDto>();
-            //CreateMap<IVehicleModel, IVehicleModelDto>();
+            CreateMap<IVehicleMake, VehicleMakeEntity>();
+            CreateMap<IVehicleModel, VehicleModelEntity>();
         }
     }
 }

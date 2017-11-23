@@ -34,9 +34,18 @@ namespace Project.WebAPI.Controllers
         #endregion
         [HttpGet]
         [Route("models")]
-        public IEnumerable<IVehicleModel> getModels()
+        public async Task<HttpResponseMessage> getModels()
         {
-            return Service.GetAllModels();
+            try
+            {
+                var result = await Service.GetAllModels();
+                return Request.CreateResponse(HttpStatusCode.OK, result);
+
+            }
+            catch (Exception e)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Error has occurred while fetchingall models");
+            }
         }
 
         [HttpGet]
@@ -84,11 +93,11 @@ namespace Project.WebAPI.Controllers
 
         [HttpPost]
         [Route("update/make")]
-        public HttpResponseMessage UpdateMake([FromBody] IVehicleMake model)
+        public async Task<HttpResponseMessage> UpdateMake([FromBody] IVehicleMake model)
         {
             try
             {
-                var result = Service.CreateUpdateMake(model);
+                var result = await Service.CreateUpdateMake(model);
                 if (result == null)
                 {
                     throw null;
@@ -103,11 +112,11 @@ namespace Project.WebAPI.Controllers
 
         [HttpPost]
         [Route("delete/make")]
-        public HttpResponseMessage DeleteMake(Guid id)
+        public async Task<HttpResponseMessage> DeleteMake(Guid id)
         {
             try
             {
-                Service.DeleteMake(id);
+                await Service.DeleteMake(id);
                 return Request.CreateResponse(HttpStatusCode.OK);
             }
             catch (Exception unused)
@@ -136,11 +145,11 @@ namespace Project.WebAPI.Controllers
         #region VehicleModel CRUD
         [HttpPost]
         [Route("create/model")]
-        public HttpResponseMessage createModel([FromBody] IVehicleModel model)
+        public async Task<HttpResponseMessage> CreateModel([FromBody] IVehicleModel model)
         {
             try
             {
-                var result = Service.CreateUpdateModel(model);
+                var result = await Service.CreateUpdateModel(model);
                 if (result == null)
                 {
                     throw null;
@@ -155,11 +164,11 @@ namespace Project.WebAPI.Controllers
 
         [HttpPost]
         [Route("update/model")]
-        public HttpResponseMessage updateModel([FromBody] IVehicleModel model)
+        public async Task<HttpResponseMessage> UpdateModel([FromBody] IVehicleModel model)
         {
             try
             {
-                var result = Service.CreateUpdateModel(model);
+                var result = await Service.CreateUpdateModel(model);
                 if (result == null)
                 {
                     throw null;

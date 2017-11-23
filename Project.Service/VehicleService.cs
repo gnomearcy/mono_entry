@@ -24,7 +24,7 @@ namespace Project.Service
             this.unitOfWork = unitOfWork;
         }
 
-        public Task<IVehicleMake> CreateUpdateMake(IVehicleMake make)
+        public async Task<IVehicleMake> CreateUpdateMake(IVehicleMake make)
         {
             if(make == null)
             {
@@ -37,42 +37,40 @@ namespace Project.Service
                 throw new Exception("AutoMapper exception");
             }
 
-            var result = vehicleMakeRepository.GetById(mapped.Id);
+            var result = await vehicleMakeRepository.GetById(mapped.Id);
             if(result == null)
             {
-                vehicleMakeRepository.Insert(mapped);
+                await vehicleMakeRepository.Insert(mapped);
             }
             else
             {
-                vehicleMakeRepository.Update(mapped);
+                await vehicleMakeRepository.Update(mapped);
             }
-            return Task.FromResult(make);
+            return await Task.FromResult(make);
         }
 
-       
-
-        public void DeleteMake(Guid id)
+        public async Task<int> DeleteMake(Guid id)
         {
             if(id == null)
             {
-                return;
+                throw new ArgumentException("id == null");
             }
 
-            var result = vehicleMakeRepository.GetById(id);
+            VehicleMakeEntity result = await vehicleMakeRepository.GetById(id);
             if(result == null)
             {
-                return;
+                return await Task.FromResult(0);
             }
 
-            vehicleMakeRepository.Delete(result);
+            return await vehicleMakeRepository.Delete(result);
         }
 
-        public IEnumerable<IVehicleMake> GetAllMakes()
+        public async Task<ICollection<IVehicleMake>> GetAllMakes()
         {
-            var result = vehicleMakeRepository.GetAll();
+            var result = await vehicleMakeRepository.GetAll();
             if(result == null)
             {
-                return null;
+                return await Task.FromResult<ICollection<IVehicleMake>>(null);
             }
 
             var mapped = new List<IVehicleMake>();
@@ -80,18 +78,51 @@ namespace Project.Service
             {
                 mapped.Add(Mapper.Map<IVehicleMake>(make));
             }
-            return mapped;
+            ICollection<IVehicleMake> r = mapped;
+            return await Task.FromResult(r);
         }
 
         #region Model CRUD
-        public IVehicleModel CreateUpdateModel(IVehicleModel model)
+        public async Task<IVehicleModel> CreateUpdateModel(IVehicleModel model)
         {
-            throw new NotImplementedException();
+            if (model == null)
+            {
+                throw new ArgumentNullException("Model model is null");
+            }
+
+            var mapped = Mapper.Map<VehicleModelEntity>(model);
+            if (mapped == null)
+            {
+                throw new Exception("AutoMapper exception");
+            }
+
+            var result = await vehicleModelRepository.GetById(mapped.Id);
+            if (result == null)
+            {
+                await vehicleModelRepository.Insert(mapped);
+            }
+            else
+            {
+                await vehicleModelRepository.Update(mapped);
+            }
+            return await Task.FromResult(model);
         }
 
-        public IEnumerable<IVehicleModel> GetAllModels()
+        public async Task<ICollection<IVehicleModel>> GetAllModels()
         {
-            throw new NotImplementedException();
+            var result = await vehicleModelRepository.GetAll();
+            if (result == null)
+            {
+                return await Task.FromResult<ICollection<IVehicleModel>>(null);
+            }
+
+            var mapped = new List<IVehicleModel>();
+            foreach (VehicleModelEntity make in result)
+            {
+                mapped.Add(Mapper.Map<IVehicleModel>(make));
+            }
+            ICollection<IVehicleModel> r = mapped;
+            return await Task.FromResult(r);
 
         }
 
@@ -109,7 +140,7 @@ namespace Project.Service
                 // Nothing was deleted, return success to the caller
                 return await Task.FromResult(0);
             }
-            var models = vehicleModelRepository.GetAll();
+            var models = await vehicleModelRepository.GetAll();
             if(models == null)
             {
                 // There are no models to delete for given MakeId

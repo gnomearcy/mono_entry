@@ -19,14 +19,14 @@ namespace Project.Service.Common
         /// API method will just ask this service for data.
         /// </summary>
         /// <returns></returns>
-        IEnumerable<IVehicleModel> GetAllModels();
+        Task<ICollection<IVehicleModel>> GetAllModels();
 
         /// <summary>
         /// Gets all makes.
         /// API method will just ask this service for data.
         /// </summary>
         /// <returns></returns>
-        IEnumerable<IVehicleMake> GetAllMakes();
+        Task<ICollection<IVehicleMake>> GetAllMakes();
 
         /// <summary>
         /// Creates a model if it doesn't exist in the database
@@ -34,7 +34,7 @@ namespace Project.Service.Common
         /// </summary>
         /// <param name="model">Model to create or update</param>
         /// <returns>The newly created model, updated model or null if there was an error.</returns>
-        IVehicleModel CreateUpdateModel(IVehicleModel model);
+        Task<IVehicleModel> CreateUpdateModel(IVehicleModel model);
 
         /// <summary>
         /// Creates a make if it doesn't exist in the database
@@ -44,13 +44,14 @@ namespace Project.Service.Common
         /// <returns>The newly created model, updated model or null if there was an error.</returns>
         Task<IVehicleMake> CreateUpdateMake(IVehicleMake make);
 
-        void DeleteMake(Guid id);
+        Task<int> DeleteMake(Guid id);
 
         /// <summary>
         /// Deletes all models that have the MakeId equal to passed Id.
         /// Also deletes the Make object from database.
+        /// The implementation is an example of UnitOfWork pattern.
         /// </summary>
-        /// <param name="makeId"></param>
+        /// <param name="makeId">Id of Make object to delete from database</param>
         Task<int> DeleteModelsByMake(Guid makeId);
     }
 }

@@ -10,14 +10,14 @@ namespace Project.Repository.Common
 {
     public interface IRepository<T, in Key> where T: class
     {
-        IEnumerable<T> GetAll();
+        Task<ICollection<T>> GetAll();
 
-        T GetById(Key id);
+        Task<T> GetById(Key id);
 
-        void Insert(T model);
+        Task<int> Insert(T model);
 
-        void Update(T model);
+        Task<int> Update(T model);
 
-        void Delete(T model);
+        Task<int> Delete(T model);
     }
 }

@@ -12,28 +12,32 @@ namespace Project.Repository
 {
     public class VehicleMakeRepository : IVehicleMakeRepository
     {
-        private VehicleDbContext Context;
+        private IDbContext Context;
 
-        public VehicleMakeRepository(VehicleDbContext Context)
+        public VehicleMakeRepository(IDbContext Context)
         {
             this.Context = Context;
         }
 
-        public void Delete(VehicleMakeEntity model)
+        public Task<int> Delete(VehicleMakeEntity model)
         {
             Context.Make.Remove(model);
-        }
-        public IEnumerable<VehicleMakeEntity> GetAll()
-        {
-            return Context.Make.ToList();
+            return Task.FromResult(1);
         }
 
-        public VehicleMakeEntity GetById(Guid id)
+        public Task<ICollection<VehicleMakeEntity>> GetAll()
         {
-            return Context.Make.FirstOrDefault( x=> x.Id == id);
+            var result = Context.Make.ToList();
+            ICollection<VehicleMakeEntity> r = result;
+            return Task.FromResult(r);
         }
 
-        public void Insert(VehicleMakeEntity model)
+        public Task<VehicleMakeEntity> GetById(Guid id)
+        {
+            return Task.FromResult(Context.Make.FirstOrDefault(x => x.Id == id));
+        }
+
+        public Task<int> Insert(VehicleMakeEntity model)
         {
             var result = Context.Make.FirstOrDefault(t => t.Id == model.Id);
             if(result == null)
@@ -41,16 +45,19 @@ namespace Project.Repository
                 // Save the record only if it doesn't exist
                 Context.Make.Add(model);
                 Context.SaveChanges();
+                return Task.FromResult(1);
             }
+            return Task.FromResult(0);
         }
 
-        public void Update(VehicleMakeEntity model)
+        public Task<int> Update(VehicleMakeEntity model)
         {
             // Source:
             // https://stackoverflow.com/a/15339512/3744259
             Context.Make.Attach(model);
-            Context.Entry(model).State = EntityState.Modified;
+            (Context as DbContext).Entry(model).State = EntityState.Modified;
             Context.SaveChanges();
+            return Task.FromResult(1);
         }
     }
 }

@@ -12,45 +12,52 @@ namespace Project.Repository
 {
     public class VehicleModelRepository : IVehicleModelRepository
     {
-        private VehicleDbContext Context;
+        public IDbContext Context;
 
-        public VehicleModelRepository(VehicleDbContext context)
+        public VehicleModelRepository(IDbContext context)
         {
             this.Context = context;
         }
 
-        public void Delete(VehicleModelEntity model)
+        public Task<int> Delete(VehicleModelEntity model)
         {
             Context.Model.Remove(model);
+            return Task.FromResult(1);
         }
 
-        public IEnumerable<VehicleModelEntity> GetAll()
+        public Task<ICollection<VehicleModelEntity>> GetAll()
         {
-            return Context.Model.ToList();
+            var result = Context.Model.ToList();
+            ICollection<VehicleModelEntity> r = result;
+            return Task.FromResult(r);
         }
 
-        public VehicleModelEntity GetById(Guid id)
+        public Task<VehicleModelEntity> GetById(Guid id)
         {
-            return Context.Model.FirstOrDefault(t => t.Id == id);
+            return Task.FromResult(Context.Model.FirstOrDefault(t => t.Id == id));
         }
 
-        public void Insert(VehicleModelEntity model)
+        public Task<int> Insert(VehicleModelEntity model)
         {
             var result = Context.Model.FirstOrDefault(t => t.Id == model.Id);
             if(result == null)
             {
                 Context.Model.Add(model);
                 Context.SaveChanges();
+                return Task.FromResult(1);
             }
+            return Task.FromResult(0);
         }
 
-        public void Update(VehicleModelEntity model)
+        public Task<int> Update(VehicleModelEntity model)
         {
             // Source:
             // https://stackoverflow.com/a/15339512/3744259
             Context.Model.Attach(model);
-            Context.Entry(model).State = EntityState.Modified;
+            (Context as DbContext).Entry(model).State = EntityState.Modified;
+            //Context.Entry(model).State = EntityState.Modified;
             Context.SaveChanges();
+            return Task.FromResult(1);
         }
     }
 }
