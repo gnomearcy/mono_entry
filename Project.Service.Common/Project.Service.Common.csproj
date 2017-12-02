@@ -40,8 +40,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IVehicleMakeService.cs" />
-    <Compile Include="IVehicleModelService.cs" />
     <Compile Include="IVehicleService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServiceStatusCode.cs" />

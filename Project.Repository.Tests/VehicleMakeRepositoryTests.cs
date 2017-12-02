@@ -1,6 +1,5 @@
 ﻿using Moq;
 using Project.DAL;
-using Project.Repository.Common;
 using Project.Repository;
 using System;
 using System.Collections;
@@ -11,24 +10,22 @@ using System.Threading.Tasks;
 using Xunit;
 using System.Data.Entity;
 using Project.Models.Common;
+using Project.Test.Common;
+using Project.Repository.Common;
 
 namespace Project.Repository.Tests
 {
-    public class VehicleMakeRepositoryTests
+    public class VehicleMakeRepositoryTests : IClassFixture<RepositoryFixture>, IClassFixture<DatabaseFixture>
     {
-        [Fact]
-        public void DeleteAllModels_AndEnsure_NoneAreLeft()
-        {
-            var mockModelRepo = new Mock<IVehicleModelRepository>();
-            List<VehicleModelEntity> collection = new List<VehicleModelEntity>();
-            mockModelRepo.Setup(ss => ss.GetAll()).ReturnsAsync(collection);
-            foreach(var elem in collection)
-            {
-                mockModelRepo.Setup(ss => ss.Delete(elem));
-            }
+        private DbTestDoubles Context;
+        private readonly VehicleModelRepository ModelRepo;
+        private readonly VehicleMakeRepository MakeRepo;
 
-            mockModelRepo.Setup(ss => ss.GetAll()).ReturnsAsync(collection);
-            Assert.Empty(collection);
+        public VehicleMakeRepositoryTests(RepositoryFixture repo, DatabaseFixture db)
+        {
+            this.MakeRepo = repo.MakeRepo.Object;
+            this.ModelRepo = repo.ModelRepo.Object;
+            this.Context = db.Db;
         }
 
         /// <summary>
@@ -38,34 +35,36 @@ namespace Project.Repository.Tests
         [Fact]
         public async void InsertFew_CheckAmount()
         {
-            var context = new DbTestDoubles();
-            var repo = new VehicleModelRepository(context);
             var times = 3;
             for (int i = 0; i < times; i++)
             {
-                context.Model.Add(new Mock<VehicleModelEntity>().Object);
+                await ModelRepo.Insert(new VehicleModelEntity
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "",
+                    Abrv = "",
+                    MakeEntity = null,
+                    MakeId = Guid.NewGuid()
+                });
             }
 
-            var collection = await repo.GetAll();
-            Assert.True((collection as List<VehicleModelEntity>).Count == times);
+            var collection = await ModelRepo.GetAll();
+            Assert.True(collection.Count == times);
         }
 
         [Fact]
         public async void InsertThenUpdateAndExpectNullReference()
         {
-            var db = new DbTestDoubles();
-            IVehicleMakeRepository makeRepo = new VehicleMakeRepository(db);
-            //IVehicleModelRepository modelRepo = new VehicleModelRepository(db);
-
             var make = new VehicleMakeEntity() { Id = Guid.NewGuid(), Name = "test", Abrv = "test2" };
-            var byId = await makeRepo.GetById(make.Id);
+            var byId = await MakeRepo.GetById(make.Id);
             Assert.Null(byId);
-            await makeRepo.Insert(make);
-            var makes = await makeRepo.GetAll();
+            await MakeRepo.Insert(make);
+            var makes = await MakeRepo.GetAll();
             Assert.Single(makes);
 
-            // Test double does not have Entity Framework DbContext class available.
-            await Assert.ThrowsAsync<NullReferenceException>(async () => await makeRepo.Update(make));
+            // Test double does not have Entity Framework DbContext class available and by implementation,
+            // adds the item to the store instead of updating it at place.
+            await Assert.ThrowsAsync<NullReferenceException>(async () => await MakeRepo.Update(make));
         }
     }
 }

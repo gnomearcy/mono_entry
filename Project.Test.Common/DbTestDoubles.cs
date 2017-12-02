@@ -10,7 +10,7 @@ using System.Collections.ObjectModel;
 using System.Linq.Expressions;
 using System.Threading;
 
-namespace Project.Repository.Tests
+namespace Project.Test.Common
 {
     public class DbTestDoubles : IDbContext
     {
