@@ -8,6 +8,7 @@ using Project.Models.Common;
 using Project.Repository.Common;
 using Project.DAL;
 using AutoMapper;
+using Project.Common;
 
 namespace Project.Service
 {
@@ -24,106 +25,100 @@ namespace Project.Service
             this.unitOfWork = unitOfWork;
         }
 
-        public async Task<IVehicleMake> CreateUpdateMake(IVehicleMake make)
+        #region Make
+        public async Task<ServiceStatusCode> CreateMake(IVehicleMake make)
         {
-            if(make == null)
+            try
             {
-                throw new ArgumentNullException("Make model is null");
-            }
-
-            var mapped = Mapper.Map<VehicleMakeEntity>(make);
-            if(mapped == null)
-            {
-                throw new Exception("AutoMapper exception");
-            }
-
-            var result = await vehicleMakeRepository.GetById(mapped.Id);
-            if(result == null)
-            {
+                var mapped = Mapper.Map<VehicleMakeEntity>(make);
                 await vehicleMakeRepository.Insert(mapped);
+                return await Task.FromResult(ServiceStatusCode.SUCCESS);
             }
-            else
+            catch (Exception)
             {
-                await vehicleMakeRepository.Update(mapped);
+                // Perform logging or some other operation here
+                // ...
+                // Let the caller know about the failure
+                return await Task.FromResult(ServiceStatusCode.FAIL);
             }
-            return await Task.FromResult(make);
         }
 
-        public async Task<int> DeleteMake(Guid id)
+        public async Task<ServiceStatusCode> UpdateMake(IVehicleMake make)
         {
-            if(id == null)
+            try
             {
-                throw new ArgumentException("id == null");
+                var mapped = Mapper.Map<VehicleMakeEntity>(make);
+                await vehicleMakeRepository.Update(mapped);
+                return await Task.FromResult(ServiceStatusCode.SUCCESS);
             }
+            catch (Exception)
+            {
+                // Perform logging or some other operation here
+                // ...
+                // Let the caller know about the failure
+                return await Task.FromResult(ServiceStatusCode.FAIL);
+            }
+        }
 
+        public async Task<ServiceStatusCode> DeleteMake(Guid id)
+        {
             VehicleMakeEntity result = await vehicleMakeRepository.GetById(id);
             if(result == null)
             {
-                return await Task.FromResult(0);
+                return await Task.FromResult(ServiceStatusCode.FAIL);
             }
 
-            return await vehicleMakeRepository.Delete(result);
+            await vehicleMakeRepository.Delete(result);
+            return await Task.FromResult(ServiceStatusCode.SUCCESS);
         }
 
-        public async Task<ICollection<IVehicleMake>> GetAllMakes()
+        #endregion
+
+        #region Model
+        public async Task<ServiceStatusCode> CreateModel(IVehicleModel model)
         {
-            var result = await vehicleMakeRepository.GetAll();
-            if(result == null)
+            try
             {
-                return await Task.FromResult<ICollection<IVehicleMake>>(null);
-            }
-
-            var mapped = new List<IVehicleMake>();
-            foreach(VehicleMakeEntity make in result)
-            {
-                mapped.Add(Mapper.Map<IVehicleMake>(make));
-            }
-            ICollection<IVehicleMake> r = mapped;
-            return await Task.FromResult(r);
-        }
-
-        #region Model CRUD
-        public async Task<IVehicleModel> CreateUpdateModel(IVehicleModel model)
-        {
-            if (model == null)
-            {
-                throw new ArgumentNullException("Model model is null");
-            }
-
-            var mapped = Mapper.Map<VehicleModelEntity>(model);
-            if (mapped == null)
-            {
-                throw new Exception("AutoMapper exception");
-            }
-
-            var result = await vehicleModelRepository.GetById(mapped.Id);
-            if (result == null)
-            {
+                var mapped = Mapper.Map<VehicleModelEntity>(model);
                 await vehicleModelRepository.Insert(mapped);
+                return await Task.FromResult(ServiceStatusCode.SUCCESS);
             }
-            else
+            catch (Exception)
             {
-                await vehicleModelRepository.Update(mapped);
+                // Perform logging or some other operation here
+                // ...
+                // Let the caller know about the failure
+                return await Task.FromResult(ServiceStatusCode.FAIL);
             }
-            return await Task.FromResult(model);
         }
 
-        public async Task<ICollection<IVehicleModel>> GetAllModels()
+        public async Task<ServiceStatusCode> UpdateModel(IVehicleModel model)
         {
-            var result = await vehicleModelRepository.GetAll();
+            try
+            {
+                var mapped = Mapper.Map<VehicleModelEntity>(model);
+                await vehicleModelRepository.Update(mapped);
+                return await Task.FromResult(ServiceStatusCode.SUCCESS);
+            }
+            catch (Exception)
+            {
+                // Perform logging or some other operation here
+                // ...
+                // Let the caller know about the failure
+                return await Task.FromResult(ServiceStatusCode.FAIL);
+            }
+        }
+
+        public async Task<ServiceStatusCode> DeleteModel(Guid id)
+        {
+            VehicleModelEntity result = await vehicleModelRepository.GetById(id);
             if (result == null)
             {
-                return await Task.FromResult<ICollection<IVehicleModel>>(null);
+                return await Task.FromResult(ServiceStatusCode.FAIL);
             }
 
-            var mapped = new List<IVehicleModel>();
-            foreach (VehicleModelEntity make in result)
-            {
-                mapped.Add(Mapper.Map<IVehicleModel>(make));
-            }
-            ICollection<IVehicleModel> r = mapped;
-            return await Task.FromResult(r);
-
+            await vehicleModelRepository.Delete(result);
+            return await Task.FromResult(ServiceStatusCode.SUCCESS);
         }
 
         /// <summary>
@@ -134,31 +129,30 @@ namespace Project.Service
         public async Task<int> DeleteModelsByMake(Guid makeId)
         {
             // Delete original make object
-            var result = await unitOfWork.DeleteAsync<VehicleMakeEntity>(makeId);
-            if(result == 0) // 0 == failure, doesn't exist
+            var make = await vehicleMakeRepository.GetById(makeId);
+            if (make == null)
             {
-                // Nothing was deleted, return success to the caller
-                return await Task.FromResult(0);
-            }
-            var models = await vehicleModelRepository.GetAll();
-            if(models == null)
-            {
-                // There are no models to delete for given MakeId
-                return await Task.FromResult(0);
+                return await Task.FromResult((int)ServiceStatusCode.FAIL);
             }
 
-            foreach(var model in models)
+            await unitOfWork.DeleteAsync(make);
+            var models = await vehicleModelRepository.GetAll();
+
+            if(models != null)
             {
-                if(model.MakeId == makeId)
+                foreach (var model in models)
                 {
-                    await unitOfWork.DeleteAsync<VehicleModelEntity>(model);
+                    if (model.MakeId == makeId)
+                    {
+                        await unitOfWork.DeleteAsync(model);
+                    }
                 }
             }
+           
 
             await unitOfWork.CommitAsync();
-            return await Task.FromResult(0);
+            return await Task.FromResult((int)ServiceStatusCode.SUCCESS);
         }
-
         #endregion
     }
 }

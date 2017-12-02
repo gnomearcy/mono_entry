@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.27004.2008
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Project.Models", "Project.Models\Project.Models.csproj", "{87B50F56-DC15-4C97-8231-CBBA4D69E4A9}"
 EndProject
@@ -26,9 +26,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Project.Service.Tests", "Project.Service.Tests\Project.Service.Tests.csproj", "{081DEEBE-549C-49FC-95AF-9A755AD004EE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Project.Common", "Project.Common\Project.Common.csproj", "{B3DADBAD-6E5B-443B-8DFF-460F88536D76}"
-	ProjectSection(ProjectDependencies) = postProject
-		{C7AD6B6B-DDAB-4DF9-8B81-C5B1D78E8EE0} = {C7AD6B6B-DDAB-4DF9-8B81-C5B1D78E8EE0}
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Project.DAL", "Project.DAL\Project.DAL.csproj", "{15350CA7-9543-4C9E-AAE1-CACEBF82D461}"
 EndProject

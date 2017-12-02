@@ -95,6 +95,10 @@
       <Project>{fa302276-06e4-4303-ad64-68c8976daf76}</Project>
       <Name>Project.Repository</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Project.Test.Common\Project.Test.Common.csproj">
+      <Project>{88aaa10e-75a2-45c9-823b-f2d75eb56386}</Project>
+      <Name>Project.Test.Common</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />

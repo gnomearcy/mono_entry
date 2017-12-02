@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 
 namespace Project.Service.Common
 {
-    interface IVehicleModelService
+    public enum ServiceStatusCode
     {
+        SUCCESS = 1,
+        FAIL = 0
     }
 }

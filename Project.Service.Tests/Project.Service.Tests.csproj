@@ -74,10 +74,6 @@
     <Analyzer Include="..\packages\xunit.analyzers.0.7.0\analyzers\dotnet\cs\xunit.analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Project.Common\Project.Common.csproj">
-      <Project>{B3DADBAD-6E5B-443B-8DFF-460F88536D76}</Project>
-      <Name>Project.Common</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Project.DAL\Project.DAL.csproj">
       <Project>{15350CA7-9543-4C9E-AAE1-CACEBF82D461}</Project>
       <Name>Project.DAL</Name>
@@ -105,6 +101,10 @@
     <ProjectReference Include="..\Project.Service\Project.Service.csproj">
       <Project>{bef11e08-3a92-4eb1-88bd-1c2e7b1a7c78}</Project>
       <Name>Project.Service</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Project.Test.Common\Project.Test.Common.csproj">
+      <Project>{88aaa10e-75a2-45c9-823b-f2d75eb56386}</Project>
+      <Name>Project.Test.Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\Project.WebAPI\Project.WebAPI.csproj">
       <Project>{C7AD6B6B-DDAB-4DF9-8B81-C5B1D78E8EE0}</Project>

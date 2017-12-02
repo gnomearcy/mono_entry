@@ -12,11 +12,13 @@ namespace Project.Common
         public TestBase()
         {
             try {
+                // All test classes run in the same process and all of them require AutoMapper to be configured
+                // AutoMapper throws an exception if it's configured more than once per process.
                 AutoMapperConfig.Configure();
             }
-            catch(System.InvalidOperationException e)
+            catch(InvalidOperationException)
             {
-                // Already initialized
+                // Already initialized / configured
             }
         }
     }
