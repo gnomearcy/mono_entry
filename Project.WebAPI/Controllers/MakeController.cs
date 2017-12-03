@@ -103,7 +103,22 @@ namespace Project.WebAPI.Controllers
         public async Task<HttpResponseMessage> GetPage([FromBody] MakePagePayload payload)
         {
             var page = await Service.GetMakePageFor(payload);
-            return Request.CreateResponse(HttpStatusCode.OK, page);
+            switch (page.Item2)
+            {
+                case ServiceStatusCode.SUCCESS:
+                    return Request.CreateResponse(HttpStatusCode.OK, page.Item1);
+                case ServiceStatusCode.FAIL:
+                default:
+                    return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "An internal server error occurred");
+            }
+            
         }
+
+        //[HttpPost]
+        //[Route("make/filter")]
+        //public async Task<HttpResponseMessage> FilterStuff([FromBody] FilterPayload payload)
+        //{
+        //    return Request.CreateResponse(HttpStatusCode.OK, null);
+        //}
     }
 }

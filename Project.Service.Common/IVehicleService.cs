@@ -28,7 +28,14 @@ namespace Project.Service.Common
 
         Task<ServiceStatusCode> DeleteMake(Guid id);
 
-        Task<MakePageDto> GetMakePageFor(MakePagePayload payload);
+        /// <summary>
+        /// Returns a tuple containing DTO object with result data with various descriptive fields
+        /// about the returned data. The tuple also holds <see cref="ServiceStatusCode"/>
+        /// code. Tuple was used because async methods don't support <code out /> parameter.
+        /// </summary>
+        /// <param name="payload">Configuration object to generate requested page data</param>
+        /// <returns>A tuple of data object and status code</returns>
+        Task<Tuple<MakePageDto, ServiceStatusCode>> GetMakePageFor(MakePagePayload payload);
         #endregion
 
         #region Model

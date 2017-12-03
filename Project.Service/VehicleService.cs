@@ -73,7 +73,7 @@ namespace Project.Service
             return await Task.FromResult(ServiceStatusCode.SUCCESS);
         }
 
-        public async Task<MakePageDto> GetMakePageFor(MakePagePayload payload)
+        public async Task<Tuple<MakePageDto, ServiceStatusCode>> GetMakePageFor(MakePagePayload payload)
         {
             var makes = await vehicleMakeRepository.GetQueryable();
             var amount = makes.Count();
@@ -87,7 +87,7 @@ namespace Project.Service
                     PageCount = 0,
                     PageSize = payload.PageSize,
                 };
-                return await Task.FromResult(errorPage);
+                return await Task.FromResult(Tuple.Create(errorPage, ServiceStatusCode.SUCCESS));
             }
             else
             {
@@ -106,12 +106,32 @@ namespace Project.Service
                         PageCount = pageCount,
                         PageSize = payload.PageSize
                     };
-                    return await Task.FromResult(invalidPage);
+                    return await Task.FromResult(Tuple.Create(invalidPage, ServiceStatusCode.SUCCESS));
                 }
 
                 int take = payload.PageSize;
 
-                var data = (payload.SortAsc ? makes.OrderBy(s => s.Name) : makes.OrderByDescending(s => s.Name))
+                Func<VehicleMakeEntity, object> sortLambda = null;
+                switch (payload.SortField)
+                {
+                    case MakePagePayload.SortType.NAME:
+                        sortLambda = (s => s.Name);
+                        break;
+                    case MakePagePayload.SortType.ABREVIATION:
+                        sortLambda = (s => s.Abrv);
+                        break;
+                    default:
+                        // Unsupported SortType enum
+                        return await Task.FromResult(Tuple.Create<MakePageDto, ServiceStatusCode>(null, ServiceStatusCode.FAIL));
+                }
+
+                
+                var data = 
+                    (
+                        payload.SortAsc ? 
+                        makes.OrderBy(sortLambda) :
+                        makes.OrderByDescending(sortLambda)
+                    )
                     .Skip(skip)
                     .Take(take)
                     .ToList();
@@ -125,7 +145,7 @@ namespace Project.Service
                     PageSize = payload.PageSize,
                 };
 
-                return await Task.FromResult(validPage);
+                return await Task.FromResult(Tuple.Create(validPage, ServiceStatusCode.SUCCESS));
             }
         }
 
