@@ -1,4 +1,5 @@
 ﻿using Project.Models.Common;
+using Project.Models.Dto;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,8 +27,10 @@ namespace Project.Service.Common
         Task<ServiceStatusCode> UpdateMake(IVehicleMake updatedMake);
 
         Task<ServiceStatusCode> DeleteMake(Guid id);
+
+        Task<MakePageDto> GetMakePageFor(MakePagePayload payload);
         #endregion
-        
+
         #region Model
         /// <summary>
         /// Creates a model if it doesn't exist in the database

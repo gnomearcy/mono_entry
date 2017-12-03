@@ -37,6 +37,11 @@ namespace Project.Repository
             return Task.FromResult(Context.Make.FirstOrDefault(x => x.Id == id));
         }
 
+        public Task<IQueryable<VehicleMakeEntity>> GetQueryable()
+        {
+            return Task.FromResult<IQueryable<VehicleMakeEntity>>(Context.Make);
+        }
+
         public Task<int> Insert(VehicleMakeEntity model)
         {
             var result = Context.Make.FirstOrDefault(t => t.Id == model.Id);

@@ -12,6 +12,8 @@ namespace Project.Repository.Common
     {
         Task<ICollection<T>> GetAll();
 
+        Task<IQueryable<T>> GetQueryable();
+
         Task<T> GetById(Key id);
 
         Task<int> Insert(T model);

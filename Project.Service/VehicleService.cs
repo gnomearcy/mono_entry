@@ -9,6 +9,7 @@ using Project.Repository.Common;
 using Project.DAL;
 using AutoMapper;
 using Project.Common;
+using Project.Models.Dto;
 
 namespace Project.Service
 {
@@ -70,6 +71,62 @@ namespace Project.Service
 
             await vehicleMakeRepository.Delete(result);
             return await Task.FromResult(ServiceStatusCode.SUCCESS);
+        }
+
+        public async Task<MakePageDto> GetMakePageFor(MakePagePayload payload)
+        {
+            var makes = await vehicleMakeRepository.GetQueryable();
+            var amount = makes.Count();
+            if(makes == null || amount == 0)
+            {
+                // Error page denoting there are no pages, with PageCount property
+                var errorPage = new MakePageDto
+                {
+                    Data = new List<IVehicleMake>(),
+                    PageNumber = payload.TargetPage,
+                    PageCount = 0,
+                    PageSize = payload.PageSize,
+                };
+                return await Task.FromResult(errorPage);
+            }
+            else
+            {
+                // Check if the requested data is out of range
+                int skip = Math.Abs(payload.TargetPage - 1) * payload.PageSize;
+                int pageCount = (amount / payload.PageSize) + (amount % payload.PageSize == 0 ? 0 : 1);
+
+                if (amount < skip)
+                {
+                    // There is more data to skip than it exists, therefor send back
+                    // an invalid page denoting requested page was out of range
+                    var invalidPage = new MakePageDto
+                    {
+                        Data = new List<IVehicleMake>(),
+                        PageNumber = payload.TargetPage,
+                        PageCount = pageCount,
+                        PageSize = payload.PageSize
+                    };
+                    return await Task.FromResult(invalidPage);
+                }
+
+                int take = payload.PageSize;
+
+                var data = (payload.SortAsc ? makes.OrderBy(s => s.Name) : makes.OrderByDescending(s => s.Name))
+                    .Skip(skip)
+                    .Take(take)
+                    .ToList();
+
+                var mapped = Mapper.Map<ICollection<IVehicleMake>>(data);
+                var validPage = new MakePageDto
+                {
+                    Data = mapped,
+                    PageNumber = payload.TargetPage,
+                    PageCount = pageCount,
+                    PageSize = payload.PageSize,
+                };
+
+                return await Task.FromResult(validPage);
+            }
         }
 
         #endregion
@@ -153,6 +210,7 @@ namespace Project.Service
             await unitOfWork.CommitAsync();
             return await Task.FromResult((int)ServiceStatusCode.SUCCESS);
         }
+
         #endregion
     }
 }

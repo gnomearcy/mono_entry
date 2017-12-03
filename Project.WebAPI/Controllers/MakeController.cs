@@ -1,5 +1,6 @@
 ﻿using Project.DAL;
 using Project.Models.Common;
+using Project.Models.Dto;
 using Project.Repository;
 using Project.Service;
 using Project.Service.Common;
@@ -95,6 +96,14 @@ namespace Project.WebAPI.Controllers
                 default:
                     return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Unknown error occurred on server side.");
             }
+        }
+
+        [HttpPost]
+        [Route("make/page")]
+        public async Task<HttpResponseMessage> GetPage([FromBody] MakePagePayload payload)
+        {
+            var page = await Service.GetMakePageFor(payload);
+            return Request.CreateResponse(HttpStatusCode.OK, page);
         }
     }
 }

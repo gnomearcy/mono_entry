@@ -41,6 +41,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Dto\MakePagePayload.cs" />
+    <Compile Include="Dto\ModelPageDto.cs" />
+    <Compile Include="Dto\ModelPagePayload.cs" />
+    <Compile Include="Dto\Page.cs" />
+    <Compile Include="Dto\MakePageDto.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="VehicleMake.cs" />
     <Compile Include="VehicleModel.cs" />
