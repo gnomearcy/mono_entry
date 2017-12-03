@@ -36,6 +36,8 @@ namespace Project.Service.Common
         /// <param name="payload">Configuration object to generate requested page data</param>
         /// <returns>A tuple of data object and status code</returns>
         Task<Tuple<MakePageDto, ServiceStatusCode>> GetMakePageFor(MakePagePayload payload);
+
+        Task<Tuple<ICollection<IVehicleMake>, ServiceStatusCode>> FilterMakes(FilterPayload payload);
         #endregion
 
         #region Model

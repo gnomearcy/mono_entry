@@ -149,6 +149,30 @@ namespace Project.Service
             }
         }
 
+
+        public async Task<Tuple<ICollection<IVehicleMake>, ServiceStatusCode>> FilterMakes(FilterPayload payload)
+        {
+            var makes = await vehicleMakeRepository.GetQueryable();
+
+            try
+            {
+                var filtered =
+                makes
+                .Where(s => s.Name.Contains(payload.Name))
+                .Union(makes.Where(s => s.Abrv.Contains(payload.Abrv)))
+                .ToList();
+
+                var mapped = Mapper.Map<ICollection<IVehicleMake>>(filtered);
+                return await Task.FromResult(Tuple.Create(mapped, ServiceStatusCode.SUCCESS));
+            }
+            catch(Exception)
+            {
+                // Possible maping exception or something broke on the database part.
+                // For the sake of this demo, exception is not logged or similar.
+                return await Task.FromResult(Tuple.Create<ICollection<IVehicleMake>, ServiceStatusCode>(null, ServiceStatusCode.FAIL));
+            }
+            
+        }
         #endregion
 
         #region Model

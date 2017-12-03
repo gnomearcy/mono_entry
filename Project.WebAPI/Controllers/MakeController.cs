@@ -114,11 +114,19 @@ namespace Project.WebAPI.Controllers
             
         }
 
-        //[HttpPost]
-        //[Route("make/filter")]
-        //public async Task<HttpResponseMessage> FilterStuff([FromBody] FilterPayload payload)
-        //{
-        //    return Request.CreateResponse(HttpStatusCode.OK, null);
-        //}
+        [HttpPost]
+        [Route("make/filter")]
+        public async Task<HttpResponseMessage> FilterStuff([FromBody] FilterPayload payload)
+        {
+            var filtered = await Service.FilterMakes(payload);
+            switch (filtered.Item2)
+            {
+                case ServiceStatusCode.SUCCESS:
+                    return Request.CreateResponse(HttpStatusCode.OK, filtered.Item1);
+                case ServiceStatusCode.FAIL:
+                default:
+                    return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "An internal server error occurred");
+            }
+        }
     }
 }
