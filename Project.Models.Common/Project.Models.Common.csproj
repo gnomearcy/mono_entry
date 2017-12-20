@@ -31,6 +31,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -40,9 +41,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Filtering\IMakeFilterParameters.cs" />
     <Compile Include="IVehicleMake.cs" />
     <Compile Include="IVehicleModel.cs" />
+    <Compile Include="Paging\IMakePageParameters.cs" />
+    <Compile Include="Paging\MakeSortValidation.cs" />
+    <Compile Include="Paging\SortType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
