@@ -18,8 +18,8 @@ namespace Project.Repository.Tests
     public class VehicleMakeRepositoryTests : IClassFixture<RepositoryFixture>, IClassFixture<DatabaseFixture>
     {
         private DbTestDoubles Context;
-        private readonly VehicleModelRepository ModelRepo;
-        private readonly VehicleMakeRepository MakeRepo;
+        private readonly IVehicleModelRepository ModelRepo;
+        private readonly IVehicleMakeRepository MakeRepo;
 
         public VehicleMakeRepositoryTests(RepositoryFixture repo, DatabaseFixture db)
         {
@@ -49,7 +49,7 @@ namespace Project.Repository.Tests
             }
 
             var collection = await ModelRepo.GetAll();
-            Assert.True(collection.Count == times);
+            Assert.True(collection.RepositoryResult.Count == times);
         }
 
         [Fact]
@@ -60,7 +60,7 @@ namespace Project.Repository.Tests
             Assert.Null(byId);
             await MakeRepo.Insert(make);
             var makes = await MakeRepo.GetAll();
-            Assert.Single(makes);
+            Assert.Single(makes.RepositoryResult);
 
             // Test double does not have Entity Framework DbContext class available and by implementation,
             // adds the item to the store instead of updating it at place.
