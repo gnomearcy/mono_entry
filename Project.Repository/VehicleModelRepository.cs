@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Project.Models.Common;
 using Project.DAL;
 using System.Data.Entity;
+using Project.Repository.Models;
 
 namespace Project.Repository
 {
@@ -19,42 +20,46 @@ namespace Project.Repository
             this.Context = context;
         }
 
-        public Task<int> Delete(VehicleModelEntity model)
+        async Task<IRepositoryResult<object>> IRepository<VehicleModelEntity, Guid>.Delete(VehicleModelEntity model)
         {
             Context.Model.Remove(model);
-            return Task.FromResult(1);
+            Context.SaveChanges();
+            return await new RepoSuccess().ToTask();
         }
 
-        public Task<ICollection<VehicleModelEntity>> GetAll()
+        async Task<IRepositoryResult<ICollection<VehicleModelEntity>>> IRepository<VehicleModelEntity, Guid>.GetAll()
         {
             var result = Context.Model.ToList();
             ICollection<VehicleModelEntity> r = result;
-            return Task.FromResult(r);
+            return await new RepoValue<ICollection<VehicleModelEntity>>
+            {
+                RepositoryResult = r
+            }
+            .ToTask();
         }
 
-        public Task<VehicleModelEntity> GetById(Guid id)
+        async Task<IRepositoryResult<VehicleModelEntity>> IRepository<VehicleModelEntity, Guid>.GetById(Guid id)
         {
-            return Task.FromResult(Context.Model.FirstOrDefault(t => t.Id == id));
+            return await new RepoValue<VehicleModelEntity>
+            {
+                RepositoryResult = Context.Model.FirstOrDefault(t => t.Id == id)
+            }
+            .ToTask();
         }
 
-        public Task<IQueryable<VehicleModelEntity>> GetQueryable()
-        {
-            return Task.FromResult<IQueryable<VehicleModelEntity>>(Context.Model);
-        }
-
-        public Task<int> Insert(VehicleModelEntity model)
+        async Task<IRepositoryResult<object>> IRepository<VehicleModelEntity, Guid>.Insert(VehicleModelEntity model)
         {
             var result = Context.Model.FirstOrDefault(t => t.Id == model.Id);
-            if(result == null)
+            if (result == null)
             {
                 Context.Model.Add(model);
                 Context.SaveChanges();
-                return Task.FromResult(1);
+                return await new RepoSuccess().ToTask();
             }
-            return Task.FromResult(0);
+            return await new RepoNoOp().ToTask();
         }
 
-        public Task<int> Update(VehicleModelEntity model)
+        async Task<IRepositoryResult<object>> IRepository<VehicleModelEntity, Guid>.Update(VehicleModelEntity model)
         {
             // Source:
             // https://stackoverflow.com/a/15339512/3744259
@@ -62,7 +67,7 @@ namespace Project.Repository
             (Context as DbContext).Entry(model).State = EntityState.Modified;
             //Context.Entry(model).State = EntityState.Modified;
             Context.SaveChanges();
-            return Task.FromResult(1);
+            return await new RepoSuccess().ToTask();
         }
     }
 }
