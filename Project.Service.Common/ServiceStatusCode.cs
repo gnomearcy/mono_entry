@@ -8,7 +8,19 @@ namespace Project.Service.Common
 {
     public enum ServiceStatusCode
     {
+        /// <summary>
+        /// Service successfully performed the action.
+        /// </summary>
         SUCCESS = 1,
-        FAIL = 0
+        
+        /// <summary>
+        /// Service method produced an error.
+        /// </summary>
+        ERROR = 2,
+
+        /// <summary>
+        /// Service did nothing.
+        /// </summary>
+        NO_OP = 3
     }
 }

@@ -40,11 +40,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IAsyncServiceResult.cs" />
     <Compile Include="IVehicleService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="IServiceResult.cs" />
     <Compile Include="ServiceStatusCode.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Project.Common\Project.Common.csproj">
+      <Project>{b3dadbad-6e5b-443b-8dff-460f88536d76}</Project>
+      <Name>Project.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Project.Models.Common\Project.Models.Common.csproj">
       <Project>{FD43FF19-3FD6-4509-89F4-DEA6A694275D}</Project>
       <Name>Project.Models.Common</Name>
@@ -54,5 +60,6 @@
       <Name>Project.Models</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

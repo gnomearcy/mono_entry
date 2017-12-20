@@ -1,13 +1,12 @@
 ﻿using Project.Models.Common;
-using Project.Models.Dto;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Project.Models.Common.Paging;
+using Project.Models.Common.Filtering;
 
-// TODO: 
-// 1. should we filter on the backend or just return all the results?
 namespace Project.Service.Common
 {
     /// <summary>
@@ -22,11 +21,11 @@ namespace Project.Service.Common
         /// </summary>
         /// <param name="make">Model to create or update</param>
         /// <returns>The newly created model, updated model or null if there was an error.</returns>
-        Task<ServiceStatusCode> CreateMake(IVehicleMake make);
+        Task<IServiceResult<object>> CreateMake(IVehicleMake make);
 
-        Task<ServiceStatusCode> UpdateMake(IVehicleMake updatedMake);
+        Task<IServiceResult<object>> UpdateMake(IVehicleMake updatedMake);
 
-        Task<ServiceStatusCode> DeleteMake(Guid id);
+        Task<IServiceResult<object>> DeleteMake(Guid id);
 
         /// <summary>
         /// Returns a tuple containing DTO object with result data with various descriptive fields
@@ -35,9 +34,9 @@ namespace Project.Service.Common
         /// </summary>
         /// <param name="payload">Configuration object to generate requested page data</param>
         /// <returns>A tuple of data object and status code</returns>
-        Task<Tuple<MakePageDto, ServiceStatusCode>> GetMakePageFor(MakePagePayload payload);
+        Task<IServiceResult<ICollection<IVehicleMake>>> GetMakePageFor(IMakePageParameters payload);
 
-        Task<Tuple<ICollection<IVehicleMake>, ServiceStatusCode>> FilterMakes(FilterPayload payload);
+        Task<IServiceResult<ICollection<IVehicleMake>>> FilterMakes(IMakeFilterParameters payload);
         #endregion
 
         #region Model
@@ -47,11 +46,11 @@ namespace Project.Service.Common
         /// </summary>
         /// <param name="model">Model to create or update</param>
         /// <returns>The newly created model, updated model or null if there was an error.</returns>
-        Task<ServiceStatusCode> CreateModel(IVehicleModel model);
+        Task<IServiceResult<object>> CreateModel(IVehicleModel model);
 
-        Task<ServiceStatusCode> UpdateModel(IVehicleModel model);
+        Task<IServiceResult<object>> UpdateModel(IVehicleModel model);
 
-        Task<ServiceStatusCode> DeleteModel(Guid id);
+        Task<IServiceResult<object>> DeleteModel(Guid id);
 
         /// <summary>
         /// Deletes all models that have the MakeId equal to passed Id.
@@ -59,7 +58,7 @@ namespace Project.Service.Common
         /// The implementation is an example of UnitOfWork pattern.
         /// </summary>
         /// <param name="makeId">Id of Make object to delete from database</param>
-        Task<int> DeleteModelsByMake(Guid makeId);
+        Task<IServiceResult<object>> DeleteModelsByMake(Guid makeId);
         #endregion Model
     }
 }
