@@ -41,12 +41,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Dto\FilterPayload.cs" />
-    <Compile Include="Dto\MakePagePayload.cs" />
-    <Compile Include="Dto\ModelPageDto.cs" />
-    <Compile Include="Dto\ModelPagePayload.cs" />
-    <Compile Include="Dto\Page.cs" />
-    <Compile Include="Dto\MakePageDto.cs" />
+    <Compile Include="Filter\FilteringPayload.cs" />
+    <Compile Include="Paging\PagingPayload.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="VehicleMake.cs" />
     <Compile Include="VehicleModel.cs" />
@@ -57,5 +53,6 @@
       <Name>Project.Models.Common</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

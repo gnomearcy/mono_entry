@@ -2,17 +2,23 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Web;
 
-namespace Project.Models.Dto
+namespace Project.WebAPI.Models
 {
-    public class FilterPayload
+    public class VehicleMakeDto
     {
+        #region Properties
+
+        [Required]
+        public Guid Id { get; set; }
+
         [Required]
         public string Name { get; set; }
 
         [Required]
         public string Abrv { get; set; }
+
+        #endregion Properties
     }
 }

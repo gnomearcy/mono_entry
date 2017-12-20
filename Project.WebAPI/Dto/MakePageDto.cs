@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Project.Models.Common;
+using Project.Models.Common.Dto;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace Project.Models.Dto
 {
-    public class Page<T> where T : class
+    public class MakePageDto : IMakePageDto
     {
-        public T Data { get; set; }
+        public ICollection<IVehicleMake> Data { get; set; }
 
         public int PageNumber { get; set; }
 
