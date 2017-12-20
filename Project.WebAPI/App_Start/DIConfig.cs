@@ -12,11 +12,29 @@ namespace Project.WebAPI.App_Start.DI
     {
         public static void Configure()
         {
-            var kernel = new StandardKernel(
-                new Project.Service.DIModule(),
-                new Project.Repository.DIModule()
-            );
+            DynamicConfiguration();
+        }
 
+        private static void StaticConfiguration()
+        {
+            var kernel = new StandardKernel(
+              new Project.Service.DIModule(),
+              new Project.Repository.DIModule()
+          );
+
+            System.Web.Http.Dependencies.IDependencyResolver ninjectResolver = new NinjectResolver(kernel);
+            GlobalConfiguration.Configuration.DependencyResolver = ninjectResolver;
+        }
+
+
+        private static void DynamicConfiguration()
+        {
+            var settings = new NinjectSettings
+            {
+                LoadExtensions = true
+            };
+            settings.ExtensionSearchPatterns = settings.ExtensionSearchPatterns.Union(new string[]{ "Project.*.dll" }).ToArray();
+            var kernel = new StandardKernel(settings);
             System.Web.Http.Dependencies.IDependencyResolver ninjectResolver = new NinjectResolver(kernel);
             GlobalConfiguration.Configuration.DependencyResolver = ninjectResolver;
         }
